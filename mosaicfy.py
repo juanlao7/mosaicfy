@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from skimage.color import rgb2gray
 from skimage.filters import sobel, sobel_h, sobel_v
 
-MEASURE_MEAN_TIME = False
+MEASURE_MIN_TIME = False
 
 def showImage(image):
     plt.imshow(image)
@@ -164,7 +164,7 @@ def process(inputImage, horizontalDivisions, randomVariation, gradientThreshold,
         horizontalSum = horizontalSobel[bounds[0]:bounds[2] + 1, bounds[1]:bounds[3] + 1].sum()
         verticalSum = verticalSobel[bounds[0]:bounds[2] + 1, bounds[1]:bounds[3] + 1].sum()
         d = (c[0] - verticalSum, c[1] + horizontalSum)
-        xy = np.array([i for i in np.ndindex(shape)])
+        xy = np.array(list(np.ndindex(shape)))
         mask1 = ((c[1] - xy[:, 1]) * (d[0] - c[0]) - (c[0] - xy[:, 0]) * (d[1] - c[1]) > 0).reshape(shape)        # Orientation of point (x, y) according to vector <d, c>
         mask2 = np.invert(mask1)
         putTile(inputImage, result, mask1, bounds, brightnessCorrection, randomBrightnessChange)
@@ -190,7 +190,7 @@ if inputImage.ndim < 3:
 elif inputImage.ndim == 4:
     inputImage = inputImage[:, :, :3]
 
-if MEASURE_MEAN_TIME:
+if MEASURE_MIN_TIME:
     times = np.zeros(5)
 
     for i in range(5):
@@ -198,7 +198,7 @@ if MEASURE_MEAN_TIME:
         times[i] = duration
 
     print(times)
-    print(times.mean())
+    print(times.min())
 else:
     result, duration = process(inputImage, args.horizontal_divisions, args.random_variation, args.gradient_threshold, args.random_brightness_change)
     print('Processed in', round(duration, 2), 'seconds.')
