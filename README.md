@@ -8,7 +8,7 @@ Small python script for converting any image into a mosaic made of square tiles.
 
 Options:
 
-* `-d <integer>` — Approximate number of tiles in each row. (default: 100)
+* `-s <integer>` — Tile size. (default: 10)
 * `-v <float>` — Random proportional variation applied to the size of each tile. (default 0.25)
 * `-g <float>` — Used for detecting borders and splitting tiles to match them. Between 0 (all tiles must be splitted) and 1 (no tiles must be splitted). (default: 0.1)
 * `-b <float>` — Range of the random brightness variation applied to each tile. (default: 0.75)
@@ -23,7 +23,7 @@ Options:
 [![After](examples/tiger_mosaic.png)](examples/tiger_mosaic.png)
 
 
-`$ python mosaicfy.py examples/flower.jpg examples/flower_mosaic.png -d 75`
+`$ python mosaicfy.py examples/flower.jpg examples/flower_mosaic.png -s 17`
 
 [![Before](examples/flower.jpg)](examples/flower.jpg)
 

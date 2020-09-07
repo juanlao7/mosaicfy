@@ -141,7 +141,7 @@ def createRectangleBounds(w, h, tileSize, randomVariation):
         if y1 < h:
             yield (x1, y1, w, h)
 
-def process(inputImage, horizontalDivisions, randomVariation, gradientThreshold, randomBrightnessChange):
+def process(inputImage, tileSize, randomVariation, gradientThreshold, randomBrightnessChange):
     start = time.time()
 
     inputImageGray = rgb2gray(inputImage)
@@ -150,7 +150,6 @@ def process(inputImage, horizontalDivisions, randomVariation, gradientThreshold,
     fullSobel = sobel(inputImageGray)
 
     result = np.zeros(inputImage.shape, dtype=np.uint8)
-    tileSize = inputImage.shape[0] // horizontalDivisions
     brightnessCorrection = 1 / (((tileSize - 1) ** 2) / (tileSize ** 2))
 
     for bounds in createRectangleBounds(inputImage.shape[0], inputImage.shape[1], tileSize, randomVariation):
@@ -175,7 +174,7 @@ def process(inputImage, horizontalDivisions, randomVariation, gradientThreshold,
 parser = argparse.ArgumentParser(description='Convert any image into a mosaic.', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('input_image', help='File path of the input image. Compatible with most common image formats.')
 parser.add_argument('output_image', help='File path of the output image. Format is inferred from the extension of the file name. Compatible with most common image formats.')
-parser.add_argument('-d', dest='horizontal_divisions', default=100, type=int, help='Approximate number of tiles in each row.')
+parser.add_argument('-s', dest='tile_size', default=10, type=int, help='Tile size.')
 parser.add_argument('-v', dest='random_variation', default=0.25, type=float, help='Random proportional variation applied to the size of each tile.')
 parser.add_argument('-g', dest='gradient_threshold', default=0.1, type=float, help='Used for detecting borders and splitting tiles to match them. Between 0 (all tiles must be splitted) and 1 (no tiles must be splitted).')
 parser.add_argument('-b', dest='random_brightness_change', default=0.75, type=float, help='Range of the random brightness variation applied to each tile.')
@@ -194,12 +193,12 @@ if MEASURE_MIN_TIME:
     times = np.zeros(5)
 
     for i in range(5):
-        _, duration = process(inputImage, args.horizontal_divisions, args.random_variation, args.gradient_threshold, args.random_brightness_change)
+        _, duration = process(inputImage, args.tile_size, args.random_variation, args.gradient_threshold, args.random_brightness_change)
         times[i] = duration
 
     print(times)
     print(times.min())
 else:
-    result, duration = process(inputImage, args.horizontal_divisions, args.random_variation, args.gradient_threshold, args.random_brightness_change)
+    result, duration = process(inputImage, args.tile_size, args.random_variation, args.gradient_threshold, args.random_brightness_change)
     print('Processed in', round(duration, 2), 'seconds.')
     plt.imsave(args.output_image, result)
